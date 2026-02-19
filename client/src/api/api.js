@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true, //browser sends cookie
 });
 
@@ -32,7 +32,7 @@ const errorHandler = async (error) => {
         try {
             
             
-            await axios.post("http://localhost:3000/api/auth/users/refresh-token", {}, {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/users/refresh-token`, {}, {
                 withCredentials: true
             });
             
