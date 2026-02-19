@@ -1,5 +1,7 @@
 
 const registrationMail = (email, name, token) => {
+    const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
     const mailData = {
         email,
         subject: "Activate Your Account — QUICK Gpt", 
@@ -15,7 +17,7 @@ const registrationMail = (email, name, token) => {
             </p>
 
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.CLIENT_URL}users/activate?token=${token}" 
+                <a href="${baseUrl}/users/activate?token=${token}" 
                    target="_blank" 
                    style="display: inline-block; background-color: #4f46e5; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 8px; font-weight: bold; font-size: 16px;"> 
                    Verify My Account 
@@ -30,7 +32,7 @@ const registrationMail = (email, name, token) => {
 
             <p style="font-size: 13px; color: #666; margin-top: 25px;">
                 If the button above doesn't work, copy and paste this link into your browser:<br>
-                <a href="${process.env.CLIENT_URL}users/activate?token=${token}" style="color: #4f46e5;">${process.env.CLIENT_URL}users/activate?token=${token}</a>
+                <a href="${baseUrl}/users/activate?token=${token}" style="color: #4f46e5;">${baseUrl}/users/activate?token=${token}</a>
             </p>
 
             <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
