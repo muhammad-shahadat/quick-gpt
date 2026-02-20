@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 
 
 import api from "../api/api";
+import { useAppContext } from "../context/useContext";
 
 
 
@@ -12,6 +13,7 @@ export const useAuthMutations = () => {
     
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+    const { setSelectedChat } = useAppContext();
     
 
     // registration mutaiton
@@ -74,6 +76,9 @@ export const useAuthMutations = () => {
 
             // clear all react query cache
             queryClient.clear();
+
+            //clear use state for chat
+            setSelectedChat(null);
             
 
             // Navigation and  feedback

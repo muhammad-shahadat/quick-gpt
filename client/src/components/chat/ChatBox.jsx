@@ -38,8 +38,7 @@ const ChatBox = () => {
         chatId: chatId || selectedChat?._id,
     })
 
-    console.log("message list: ", data);
-
+    
     const { 
         sendMessageMutation, 
         createChatMutation, 
