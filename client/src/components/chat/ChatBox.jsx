@@ -72,7 +72,7 @@ const ChatBox = () => {
         }
 
         if (currentChatId) {
-            sendMessageMutation.mutate({ chatId: selectedChat._id, content: currentPrompt });
+            sendMessageMutation.mutate({ chatId: currentChatId, content: currentPrompt });
         } else {
             
             createChatMutation.mutate(null, {
