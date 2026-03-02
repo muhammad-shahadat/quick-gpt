@@ -182,13 +182,24 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
                 {/* Settings Popover */}
                 {isSettingsOpen && (
                     <div className="absolute bottom-16 left-0 w-full bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+                        
+                        {/* Close Icon (X) */}
+                        <div className="flex justify-end p-1">
+                            <X 
+                                onClick={() => setIsSettingsOpen(false)} 
+                                className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-white cursor-pointer transition-colors" 
+                            />
+                        </div>
+
                         <button onClick={() => {navigate("/community"); setIsSettingsOpen(false); setIsMenuOpen(false)}} className="flex items-center gap-3 w-full p-3 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-sm cursor-pointer">
                             <Image className="w-4 h-4" /> Community Images
                         </button>
+
                         <button onClick={() => {navigate("/credits"); setIsSettingsOpen(false); setIsMenuOpen(false)}} className="flex items-center gap-3 w-full p-3 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-sm cursor-pointer">
                             <Diamond className="w-4 h-4 text-purple-500" /> 
                             <span>Credits: {user?.credits}</span>
                         </button>
+
                         <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="flex items-center justify-between w-full p-3 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-sm cursor-pointer">
                             <div className="flex items-center gap-3">
                                 {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -196,7 +207,9 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
                             </div>
                             <div className="text-[10px] bg-gray-200 dark:bg-white/10 px-2 py-0.5 rounded uppercase">{theme}</div>
                         </button>
+
                         <div className="h-[1px] bg-gray-100 dark:bg-white/10 my-1" />
+
                         <button 
                             onClick={() => logoutMutation.mutate()} 
                             disabled={logoutMutation.isPending}
@@ -209,9 +222,7 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
                                     <LogOut className="w-4 h-4" />
                                 )}
                                 <span>Logout</span>
-                                
                             </div>
-                            
                         </button>
                     </div>
                 )}

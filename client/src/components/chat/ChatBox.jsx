@@ -124,7 +124,7 @@ const ChatBox = () => {
         const timer = setTimeout(() => {
             messagesEndRef.current?.scrollIntoView({ 
                 behavior: "smooth",
-                block: "end" // block end dile eita thik niche giye thambe
+                block: "end"
             });
 
         }, 100);

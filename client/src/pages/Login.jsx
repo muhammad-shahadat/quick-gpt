@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {Loader2, UserRoundCheck} from 'lucide-react';
 
 import { useAuthMutations } from '../hooks/useAuthMutations';
+import toast from 'react-hot-toast';
 
 
 
@@ -19,18 +20,37 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // toast loader starts
+        const toastId = toast.loading("Connecting to server...");
+        const timeoutId = setTimeout(() => {
+            toast.loading("Server is waking up from cold start, please wait!", { id: toastId });
+            
+        }, 4000);
 
         if(state === "register") {
             registerMutation.mutate({
                 name,
                 email,
                 password,
+            }, {
+                onSettled: () => {
+                    clearTimeout(timeoutId);
+                    toast.dismiss(toastId);
+                }
             })
         }
         else {
             loginMutation.mutate({
                 email,
                 password
+            }, {
+
+                onSettled: () => {
+                    clearTimeout(timeoutId);
+                    toast.dismiss(toastId);
+                }
+
             })
         }
 
@@ -45,9 +65,20 @@ const Login = () => {
         setEmail(guestEmail);
         setPassword(guestPassword);
 
+        const toastId = toast.loading("Accessing Guest Account...");
+
+        const timeoutId = setTimeout(() => {
+            toast.loading("Establishing secure database connection & Server is waking up from cold start, please wait!", { id: toastId });
+        }, 4000);
+
         loginMutation.mutate({
             email: guestEmail,
             password: guestPassword,
+        }, {
+            onSettled: () => {
+                clearTimeout(timeoutId);
+                toast.dismiss(toastId);
+            }
         });
     }
 
