@@ -31,7 +31,7 @@ app.use(passport.initialize());
 
 //home route
 app.get("/", (req, res) => {
-  res.status(200).send("<h2>Ai Gpt Project</h2>");
+  res.status(200).send("<h2>Quick Gpt Project</h2>");
 });
 
 
