@@ -38,7 +38,7 @@ Quick-GPT is a full-stack AI application built with the **MERN** stack, featurin
 - **🔐 Advanced Auth:** Secure Register/Login with email activation and Guest Login for quick access.
 - **💬 AI Chatbot:** Real-time conversational AI with message history persistence using MongoDB.
 - **🖼️ Image Generation:** AI-powered image creation (Integration in progress).
-- **💳 Credit System:** Users get limited credits per day/account to interact with the AI.
+- **💳 Credit System:** Users get limited credits per day/account to interact with the AI (Payment integration in progress).
 - **🌓 UI/UX:** Fully responsive design with **Dark/Light Mode** support and smooth animations.
 - **⚡ Performance:** Optimized state management with **React Query** for seamless data fetching and caching.
 
@@ -81,6 +81,59 @@ Configuring a monorepo (Frontend & Backend in one repo) for separate deployment 
 
 ---
 
+## 🗄️ Database Schema (MongoDB ER Diagram)
+
+```mermaid
+erDiagram
+    PLAN ||--o{ USER : assigned_to
+    USER ||--o{ CHAT : creates
+    CHAT ||--o{ MESSAGE : contains
+    
+
+    USER {
+        ObjectId _id
+        string name
+        string email
+        string password
+        boolean isActive
+        ObjectId plan
+        date createdAt
+        date updatedAt
+    }
+    PLAN {
+        ObjectId _id
+        string name
+        number maxChatsPerDay
+        number maxMessagesPerChat
+        number contextWindow
+        number price
+        date createdAt
+        date updatedAt
+    }
+    CHAT {
+        ObjectId _id
+        ObjectId user
+        string title
+        boolean isArchived
+        date createdAt
+        date updatedAt
+    }
+
+    MESSAGE {
+        ObjectId _id
+        ObjectId chat
+        string role
+        string content
+        boolean isImage
+        number tokenUsage
+        date createdAt
+        date updatedAt
+    }
+
+    
+```
+---
+
 ## 📁 Project Structure (Monorepo)
 
 ```text
@@ -93,7 +146,6 @@ Configuring a monorepo (Frontend & Backend in one repo) for separate deployment 
     ├── routes/            # API Endpoints
     └── controllers/       # Business Logic
 ```
-
 ---
 ## 🚀 Installation & Local Setup
 
