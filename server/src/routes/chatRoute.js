@@ -3,6 +3,7 @@ import express from "express"
 import passport from "../passport.js";
 import { handleCreateChat, handleDeleteChat, handleGetChats } from "../controllers/chatController.js";
 import { handleSendMessage } from "../controllers/messageController.js";
+import { handleGenerateImage } from "../controllers/imageController.js";
 
 
 
@@ -29,6 +30,13 @@ router.post("/send-message",
     passport.authenticate("jwt", {session: false}),
     handleSendMessage
 )
+
+router.post("/generate-image", 
+    passport.authenticate("jwt", {session: false}),
+    handleGenerateImage
+)
+
+
 
 
 export default router;

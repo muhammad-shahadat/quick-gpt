@@ -10,6 +10,9 @@ import authRouter from "./routes/authRoute.js";
 import userRouter from "./routes/userRoute.js";
 import chatRouter from "./routes/chatRoute.js";
 import messageRouter from "./routes/messageRoute.js";
+import imageRouter from "./routes/imageRoute.js";
+import planRouter from "./routes/planRoute.js";
+import paymentRouter from "./routes/paymentRoute.js";
 
 
 
@@ -46,6 +49,15 @@ app.use("/api/chats", chatRouter);
 
 //message route
 app.use("/api/messages", messageRouter);
+
+//image route
+app.use("/api/images", imageRouter);
+
+//plan route
+app.use("/api/plans", planRouter);
+
+//payment route
+app.use("/api/payments", paymentRouter);
 
 
 

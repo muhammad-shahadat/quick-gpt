@@ -106,9 +106,10 @@ export const handleSendMessage = async (req, res, next) => {
 
 
         // 10. reduce credits of users
-        await User.findByIdAndUpdate(chatDetail.user._id, { 
-            $inc: { credits: -1 } 
-        });
+        await User.findByIdAndUpdate(
+            chatDetail.user._id, 
+            { $inc: { credits: -1 } }
+        );
 
         return successResponse(res, {
             statusCode: 201,

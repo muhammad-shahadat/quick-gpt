@@ -35,7 +35,7 @@ Quick-GPT is a full-stack AI application built with the **MERN** stack, featurin
 
 ## ✨ Key Features
 
-- **🔐 Advanced Auth:** Secure Register/Login with email activation and Guest Login for quick access.
+- **🔐 Advanced Auth:** Secure authentication using JWT (Access + Refresh Token with rotation), HTTP-only cookies, email verification via Nodemailer, and Guest Login for quick access.
 - **💬 AI Chatbot:** Real-time conversational AI with message history persistence using MongoDB.
 - **🖼️ Image Generation:** AI-powered image creation (Integration in progress).
 - **💳 Credit System:** Users get limited credits per day/account to interact with the AI (Payment integration in progress).
