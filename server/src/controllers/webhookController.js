@@ -1,4 +1,4 @@
-import stripe from "../configs/stripe.js";
+import stripe from "./../configs/stripe.js";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js";
 
