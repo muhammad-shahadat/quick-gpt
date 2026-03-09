@@ -1,4 +1,4 @@
-import stripe from "../configs/stripe";
+import stripe from "../configs/stripe.js";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js";
 
@@ -27,7 +27,7 @@ export const handleStripeWebhook = async (req, res) => {
                 
                 const payment = await Payment.findOne({ stripeSessionId: session.id });
 
-                if (payment && payment.status !== 'paid') {
+                if (session.metadata.userId && payment && payment.status !== 'paid') {
                     
                     payment.status = 'paid';
                     payment.transactionId = session.payment_intent;
