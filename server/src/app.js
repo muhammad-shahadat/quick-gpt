@@ -13,12 +13,18 @@ import messageRouter from "./routes/messageRoute.js";
 import imageRouter from "./routes/imageRoute.js";
 import planRouter from "./routes/planRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
+import { handleStripeWebhook } from "./controllers/webhookController.js";
 
 
 
 const app = express();
 
 
+
+app.post("/api/payments/webhook",
+    express.raw({type: "application/json"}),
+    handleStripeWebhook,
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
