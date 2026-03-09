@@ -27,7 +27,7 @@ export const handleStripeWebhook = async (req, res) => {
                 
                 const payment = await Payment.findOne({ stripeSessionId: session.id });
 
-                if (session.metadata.userId && payment && payment.status !== 'paid') {
+                if (session.metadata?.userId && payment && payment.status !== 'paid') {
                     
                     payment.status = 'paid';
                     payment.transactionId = session.payment_intent;
