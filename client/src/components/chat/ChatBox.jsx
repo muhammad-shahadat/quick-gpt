@@ -40,7 +40,8 @@ const ChatBox = () => {
 
     
     const { 
-        sendMessageMutation, 
+        sendMessageMutation,
+        generateImageMutation, 
         createChatMutation, 
         isAnyLoading, 
         isAnyError, 
@@ -64,20 +65,26 @@ const ChatBox = () => {
             textareaRef.current.style.height = "auto";
         }
 
-        if(mode === "image") {
+        const executeMutation = (chatId) => {
 
-            toast.error("image api is not built yet! you can only chat");
-            
-            return;
+            if(mode === "image") {
+                generateImageMutation.mutate({ chatId, content: currentPrompt, isPublished });
+            }
+            else{
+                sendMessageMutation.mutate({ chatId, content: currentPrompt });
+            }
         }
 
+    
+
         if (currentChatId) {
-            sendMessageMutation.mutate({ chatId: currentChatId, content: currentPrompt });
+            executeMutation(currentChatId);
+            
         } else {
             
             createChatMutation.mutate(null, {
                 onSuccess: (newChat) => {
-                    sendMessageMutation.mutate({ chatId: newChat._id, content: currentPrompt });
+                    executeMutation(newChat._id);
                 }
             });
         }
@@ -170,10 +177,19 @@ const ChatBox = () => {
                             />
                         </div>
                         
+                        {
+                            mode === "image" ? (
+                                <span className='text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse'>
+                                    Generating
+                                </span>
+                            ) : (
+                                <span className='text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse'>
+                                    Thinking
+                                </span>
+
+                            )
+                        }
                         
-                        <span className='text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse'>
-                            Thinking
-                        </span>
                     </div>
                 )}
 

@@ -35,8 +35,8 @@ export const handleCreateCheckoutSession = async (req, res, next) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.CLIENT_URL || "http://localhost:5173"}/loading`,
-            cancel_url: `${process.env.CLIENT_URL || "http://localhost:5173"}`,
+            success_url: `${process.env.CLIENT_URL || "http://localhost:5173"}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_URL || "http://localhost:5173"}/credits`,
             customer_email: req.user.email,
             metadata: {
                 userId: userId.toString(),
@@ -66,4 +66,49 @@ export const handleCreateCheckoutSession = async (req, res, next) => {
         console.error("Stripe Session Error:", error);
         next(error);
     }
+};
+
+export const handleVerifyPayment = async (req, res, next) => {
+
+    try {
+
+        const { sessionId } = req.body;
+
+        if (!sessionId) {
+            return next(createHttpError(400, "Session ID is required"));
+        }
+
+        
+        const payment = await Payment.findOne({ stripeSessionId: sessionId });
+
+        if (!payment) {
+            return next(createHttpError(404, "Payment record not found"));
+        }
+
+        
+        if (payment.status === 'pending') {
+            //sending 400 error so that, TanStack Query can 'retry'
+            return next(createHttpError(400, "Payment is still processing. Please wait!"));
+        }
+
+        
+        if (payment.status === 'paid') {
+            return successResponse(res, {
+                statusCode: 200,
+                message: "Payment verified successfully",
+                payload: { 
+                    status: payment.status,
+                    credits: payment.credits 
+                }
+            });
+        }
+
+        return next(createHttpError(400, `Payment status: ${payment.status}`));
+
+    } catch (error) {
+        console.error("Verify Payment Error:", error);
+        next(error);
+        
+    }
+
 };

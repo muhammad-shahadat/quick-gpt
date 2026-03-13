@@ -72,9 +72,82 @@ export const useChatMutations = () => {
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({ queryKey: ['messages', variables.chatId] });
             queryClient.invalidateQueries({ queryKey: ['chats'] });
+            queryClient.invalidateQueries({ queryKey: ['user'] });
         },
     });
 
+
+
+    const generateImageMutation = useMutation({
+
+        mutationFn: async ({ chatId, content, isPublished }) => {
+            const res = await api.post("/api/chats/generate-image", { chatId, content, isPublished });
+            return res.data.payload;
+
+        },
+
+        onMutate: async (newMessage) => {
+            await queryClient.cancelQueries({ queryKey: ['messages', newMessage.chatId] });
+
+            const previousMessages = queryClient.getQueryData(['messages', newMessage.chatId]);
+
+            queryClient.setQueryData(['messages', newMessage.chatId], (old) => {
+                
+                const defaultMessageData = {
+                    pageParams: [undefined],
+                    pages: [{
+                        messages: [],
+                        
+                    }],
+                    
+                }
+                const currentMessageData = old || defaultMessageData;
+
+                const newPages = [...currentMessageData.pages];
+
+
+
+                newPages[0] = {
+                    ...newPages[0],
+                    messages: [
+
+                        {
+                            _id: "temp-" + Date.now(),
+                            content: newMessage.content,
+                            role: "user",
+                            isImage: false,
+                            createdAt: new Date().toISOString(),
+                            optimistic: true,
+                        },
+                        ...newPages[0].messages,
+
+                    ],
+                };
+
+                return { ...currentMessageData, pages: newPages };
+            });
+
+            return { previousMessages };
+        },
+
+        onError: (err, newMessage, context) => {
+            if (context?.previousMessages) {
+                queryClient.setQueryData(['messages', newMessage.chatId], context.previousMessages);
+            }
+            //toast.error(err?.response?.data?.message || "Image generation failed!");
+        },
+
+        onSettled: (data, error, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['messages', variables.chatId] });
+            queryClient.invalidateQueries({ queryKey: ['chats'] });
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+        },
+
+
+
+    });
+
+    
 
     const createChatMutation = useMutation({
         mutationFn: async () => {
@@ -113,11 +186,12 @@ export const useChatMutations = () => {
 
     return {
         sendMessageMutation,
+        generateImageMutation,
         createChatMutation,
         deleteChatMutation,
-        isAnyLoading: sendMessageMutation.isPending || createChatMutation.isPending,
-        isAnyError: sendMessageMutation.isError || createChatMutation.isError,
-        error: sendMessageMutation.error || createChatMutation.error
+        isAnyLoading: sendMessageMutation.isPending || createChatMutation.isPending || generateImageMutation.isPending,
+        isAnyError: sendMessageMutation.isError || createChatMutation.isError || generateImageMutation.isError,
+        error: sendMessageMutation.error || createChatMutation.error || generateImageMutation.error
     };
 };
 

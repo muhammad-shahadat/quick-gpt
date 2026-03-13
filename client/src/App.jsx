@@ -12,6 +12,7 @@ import Sidebar from './components/chat/Sidebar';
 import VerifyAccount from './pages/VerifyAccount';
 import ProtectedRoute from './components/ProtectedRoute';
 import Loading from './pages/Loading';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 
 
@@ -51,16 +52,20 @@ const App = () => {
                 } />
                 
                 <Route path='/users/activate' element={<VerifyAccount />} />
+                
 
                 {/*Protected route*/}
                 <Route element={<ProtectedRoute />}>
+
+                    {/* payment success  */}
+                    <Route path='/payment-success' element={<PaymentSuccess />} />
+                    
                     <Route path='/*' element={
                         <div className='dark:bg-gradient-to-b from-[#242124] to-[#000000] dark:text-white'>
                             <div className='flex h-screen w-screen'>
                                 <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
                                 <Routes>
                                     <Route path='/' element={<ChatBox />} />
-                                    <Route path='/loading' element={<Loading />} />
                                     <Route path='/chat/:chatId' element={<ChatBox />} />
                                     <Route path='/credits' element={<Credits />} />
                                     <Route path='/community' element={<Community />} />
