@@ -1,8 +1,4 @@
-import { 
-    BrevoClient, 
-    BrevoError,
-    UnauthorizedError,
-} from '@getbrevo/brevo';
+import { BrevoClient } from '@getbrevo/brevo';
 import createHttpError from 'http-errors';
 
 
@@ -30,28 +26,30 @@ const sendMailWithBrevo = async (mailData) => {
         
 
     } catch (error) {
-        if (error instanceof UnauthorizedError) {
-            console.error('Invalid API key');
-            throw createHttpError(401, 'Invalid API key');
-        } 
-        else if (error instanceof BrevoError) {
-            console.error(`API error ${error.statusCode}:`, error.message);
-            // যদি ব্রেভো থেকে ৪২৯ (Too Many Requests) আসে, তবে রেসপন্স হেডার চেক করা
+        if (error.statusCode) {
+            console.error(`Brevo API Error | Status Code: ${error.statusCode} | Message: ${error.message}`);
 
-            if (error.statusCode === 429 && error.rawResponse?.headers) {
-                const retryAfter = error.rawResponse.headers['retry-after'];
+            if (error.statusCode === 401) {
+                console.error('Invalid API key');
+                throw createHttpError(401, 'Invalid API key');
+            } 
+            else if (error.statusCode === 429) {
+                const retryAfter = error.rawResponse?.headers?.['retry-after'] || 60;
                 console.error(`Rate limited. Retry after ${retryAfter}s`);
-                throw createHttpError(429, `Rate limited. Retry after ${retryAfter || 60}s`);
+                throw createHttpError(429, `Rate limited. Retry after ${retryAfter}s`);
+            } 
+            else {
+                // অন্য কোনো ব্রেভো এপিআই এরর (যেমন: ৪০০ বা ৫০০)
+                throw createHttpError(error.statusCode, `API error ${error.statusCode}: ${error.message}`);
             }
-
-            throw createHttpError(error.statusCode, `API error ${error.statusCode}:`, error.message);
-            
+        } else {
+            // ব্রেভোর বাইরের কোনো নেটওয়ার্ক বা সিস্টেম এরর
+            console.error("GENERAL SYSTEM MAIL ERROR:");
+            console.error(error);
+            throw error;
         }
-
-        console.error("MAIL ERROR:");
-        console.error("Error while sending mail", error);
-        throw error;
     }
+    
 }
 
 export default sendMailWithBrevo;
