@@ -5,8 +5,8 @@ import bcrypt from "bcrypt";
 import createJsonWebToken from "../helpers/jsonWebToken.js";
 import User from "../models/User.js";
 import { successResponse } from "./responseController.js";
-import emailWithNodemailer from "../helpers/nodemailer.js";
 import registrationMail from "../helpers/prepareMail.js";
+import sendMailWithBrevo from "../helpers/brevoMailer.js";
 
 
 
@@ -49,7 +49,7 @@ export const handleRegisterUser = async (req, res, next) => {
 
         console.log("BEFORE SEND MAIL");
 
-        await emailWithNodemailer(mailData);
+        await sendMailWithBrevo(mailData);
 
         console.log("After SEND MAIL");
 
