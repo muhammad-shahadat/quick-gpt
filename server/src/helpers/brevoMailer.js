@@ -2,7 +2,6 @@ import {
     BrevoClient, 
     BrevoError,
     UnauthorizedError,
-    TooManyRequestsError, 
 } from '@getbrevo/brevo';
 import createHttpError from 'http-errors';
 
@@ -34,12 +33,17 @@ const sendMailWithBrevo = async (mailData) => {
         if (error instanceof UnauthorizedError) {
             console.error('Invalid API key');
             throw createHttpError(401, 'Invalid API key');
-        } else if (error instanceof TooManyRequestsError) {
-            const retryAfter = error.rawResponse.headers['retry-after'];
-            console.error(`Rate limited. Retry after ${retryAfter}s`);
-            throw createHttpError(429, `Rate limited. Retry after ${retryAfter}s`);
-        } else if (error instanceof BrevoError) {
+        } 
+        else if (error instanceof BrevoError) {
             console.error(`API error ${error.statusCode}:`, error.message);
+            // যদি ব্রেভো থেকে ৪২৯ (Too Many Requests) আসে, তবে রেসপন্স হেডার চেক করা
+
+            if (error.statusCode === 429 && error.rawResponse?.headers) {
+                const retryAfter = error.rawResponse.headers['retry-after'];
+                console.error(`Rate limited. Retry after ${retryAfter}s`);
+                throw createHttpError(429, `Rate limited. Retry after ${retryAfter || 60}s`);
+            }
+
             throw createHttpError(error.statusCode, `API error ${error.statusCode}:`, error.message);
             
         }
