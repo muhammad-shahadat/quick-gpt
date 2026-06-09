@@ -51,7 +51,7 @@ export const handleRegisterUser = async (req, res, next) => {
 
         await emailWithNodemailer(mailData);
 
-        console.log("BEFORE SEND MAIL");
+        console.log("After SEND MAIL");
 
         successResponse(res, {
             statusCode: 200,

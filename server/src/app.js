@@ -83,9 +83,11 @@ app.use((req, res, next) => {
 
 //internal server error and all global errors
 app.use((error, req, res, next) => {
+
+    console.log("GLOBAL ERROR HIT");
   errorResponse(res, {
-    statusCode: error.status,
-    message: error.message,
+    statusCode: error.status || 500,
+    message: error.message || "Internal Server Error",
   });
 });
 

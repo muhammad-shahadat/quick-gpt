@@ -21,6 +21,10 @@ const emailWithNodemailer = async (mailData) =>{
             html: mailData.html,
         }
 
+        await transporter.verify();
+
+        console.log("SMTP VERIFIED");
+        
         console.log("BEFORE SENDMAIL inside 'emailWithNodemailer' function");
 
         const info = await transporter.sendMail(mailOptions);
