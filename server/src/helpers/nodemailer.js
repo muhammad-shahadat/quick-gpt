@@ -21,12 +21,16 @@ const emailWithNodemailer = async (mailData) =>{
             html: mailData.html,
         }
 
+        console.log("BEFORE SENDMAIL");
+
         const info = await transporter.sendMail(mailOptions);
+        console.log("AFTER SENDMAIL");
         console.log("Message sent: %s", info.messageId);
         console.log("Message sent: %s", info.response);
 
         
     } catch (error) {
+        console.error("MAIL ERROR:");
         console.error("Error while sending mail", error);
         throw error;
         

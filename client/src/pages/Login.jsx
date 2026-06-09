@@ -57,7 +57,10 @@ const Login = () => {
     }
 
 
-    const handleGuestLogin = () => {
+    const handleGuestLogin = (e) => {
+
+        e.preventDefault(); // আইফোন ব্রাউজারের অটো-সাবমিট ব্লক করার জন্য
+        e.stopPropagation(); // ইভেন্ট বাবলিং থামানোর জন্য
 
         const guestEmail = "guest@recruiter.com";
         const guestPassword = "12345678";
@@ -118,7 +121,7 @@ const Login = () => {
             {state === "login" && !loginMutation.isPending && (
                 <button 
                     type="button"
-                    onClick={handleGuestLogin}
+                    onClick={(e) => handleGuestLogin(e)}
                     className="flex items-center justify-center gap-2 w-full border border-indigo-500 text-indigo-500 py-2 rounded-md hover:bg-indigo-50 transition-all font-medium cursor-pointer"
                 >   
                     <UserRoundCheck size={18} /> Login as Guest

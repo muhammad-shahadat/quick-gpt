@@ -197,9 +197,22 @@ export const handleLoginUser = async (req, res, next) =>{
 export const handleRefreshToken = async (req, res, next) => {
     try {
 
+
+        console.log("=== REFRESH TOKEN ROUTE HIT ===");
+
+        console.log("Cookies:", req.cookies);
+
         const oldRefreshToken = req.cookies.refreshToken;
 
+        console.log("Refresh Token:", oldRefreshToken);
+
+        if (!oldRefreshToken) {
+            return next(createHttpError(401, "Refresh token missing"));
+        }
+
         const decoded = jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_KEY);
+
+       
 
         
         /* ====================================
@@ -252,6 +265,9 @@ export const handleRefreshToken = async (req, res, next) => {
 
         })
     } catch (error) {
+
+        console.error("REFRESH TOKEN ERROR:");
+        console.error(error);
 
         if (error.name === "TokenExpiredError") {
 

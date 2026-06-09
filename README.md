@@ -186,7 +186,7 @@ GEMINI_API_KEY= # -> your gemini api key
 npm start
 ```
 ### 3. Setup Frontend
-#### Split terminal and run:
+#### Split terminal and go back root dir using `cd ..` then run:
 ```bash
 cd client
 npm install
