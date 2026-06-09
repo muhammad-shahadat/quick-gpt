@@ -4,8 +4,11 @@ import nodemailer from "nodemailer";
 // Create a transporter for SMTP
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // upgrade later with STARTTLS
+  port: 465,               // ৫৮৭ এর বদলে ৪৬৫ দিন (Render-এ এটি কখনই ব্লক হয় না)
+  secure: true,            // পোর্ট ৪৬৫ এর জন্য এটি অবশ্যই true হবে
+  connectionTimeout: 20000, 
+  greetingTimeout: 20000,   
+  socketTimeout: 25000,     
   auth: {
     user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD,
@@ -24,7 +27,7 @@ const emailWithNodemailer = async (mailData) =>{
         await transporter.verify();
 
         console.log("SMTP VERIFIED");
-        
+
         console.log("BEFORE SENDMAIL inside 'emailWithNodemailer' function");
 
         const info = await transporter.sendMail(mailOptions);
