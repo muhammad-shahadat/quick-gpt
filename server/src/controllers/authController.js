@@ -17,6 +17,9 @@ const isProduction = process.env.NODE_ENV === "production";
 export const handleRegisterUser = async (req, res, next) => {
     try {
 
+        console.log("REGISTER START");
+        console.log(req.body);
+
         const {name, email, password} = req.body;
 
 
@@ -35,12 +38,20 @@ export const handleRegisterUser = async (req, res, next) => {
             password: password,
         }
 
-
+        console.log("BEFORE CREATE TOKEN");
         const token = await createJsonWebToken(jwtPayload, process.env.JWT_ACTIVATION_KEY, {expiresIn: "30m"});
+
+        console.log("TOKEN CREATED");
+
 
         //Prepare mail
         const mailData = registrationMail(email, name, token);
+
+        console.log("BEFORE SEND MAIL");
+
         await emailWithNodemailer(mailData);
+
+        console.log("BEFORE SEND MAIL");
 
         successResponse(res, {
             statusCode: 200,
