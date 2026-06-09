@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
-import {Loader2, UserRoundCheck} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { Loader2, UserRoundCheck, AlertTriangle } from 'lucide-react'; // AlertTriangle অ্যাড করা হয়েছে
 
 import { useAuthMutations } from '../hooks/useAuthMutations';
-import toast from 'react-hot-toast';
-
-
-
 
 
 const Login = () => {
@@ -14,7 +11,6 @@ const Login = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
 
     const { registerMutation, loginMutation } = useAuthMutations();
 
@@ -45,20 +41,15 @@ const Login = () => {
                 email,
                 password
             }, {
-
                 onSettled: () => {
                     clearTimeout(timeoutId);
                     toast.dismiss(toastId);
                 }
-
             })
         }
-
     }
 
-
     const handleGuestLogin = () => {
-
         const guestEmail = "guest@recruiter.com";
         const guestPassword = "12345678";
 
@@ -84,9 +75,25 @@ const Login = () => {
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] text-gray-500 rounded-lg shadow-xl border border-gray-200 bg-white">
+            
             <p className="text-2xl font-medium m-auto">
                 <span className="text-indigo-500">User</span> {state === "login" ? "Login" : "Sign Up"}
             </p>
+
+            {/* --- Browser Compatibility Reviewer Notice (New Add) --- */}
+            <div className="w-full bg-amber-50 border border-amber-200 rounded-md p-3 flex gap-2 items-start mt-1">
+                <AlertTriangle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-0.5">
+                    <p className="text-[11px] font-semibold text-amber-800 leading-tight">Reviewer Notice: Browser Info</p>
+                    <p className="text-[10px] text-amber-700 leading-snug">
+                        Auth relies on HTTP-Only cookies. Due to third-party cookie limits on free hosting, login won't set cookies on <span className="font-semibold">Safari</span> or <span class="font-semibold">Mobile browsers</span>.
+                    </p>
+                    <p className="text-[10px] font-medium text-amber-900 mt-0.5">
+                        👉 Please evaluate using <span className="underline font-semibold">Google Chrome</span> or <span className="underline font-semibold">MS Edge</span>.
+                    </p>
+                </div>
+            </div>
+
             {state === "register" && (
                 <div className="w-full">
                     <p>Name</p>
@@ -126,7 +133,7 @@ const Login = () => {
             )}
 
             {state === "register" && (
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-2 mt-2">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-2 mt-2 w-full">
                     <p className="text-[10px] text-blue-700 leading-tight">
                         <strong>Note:</strong> We will send an activation link to your email. 
                         Disposable or dummy emails will not work. Please use a valid email to access the app.
@@ -137,6 +144,5 @@ const Login = () => {
         </form>
     );
 };
-
 
 export default Login
