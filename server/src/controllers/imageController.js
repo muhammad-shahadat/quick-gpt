@@ -45,13 +45,25 @@ export const handleGenerateImage = async (req, res, next) => {
 
         const encodedPrompt = encodeURIComponent(content);
 
-        //generate image url from ai
-        const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/quickgpt/${Date.now()}.png?tr=w-800,h-800`;
-        console.log("genereted image url: ", generatedImageUrl);
+        
+        // Pollinations AI সম্পূর্ণ ফ্রি এবং আনলিমিটেড
+        const aiImageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=800&seed=${Date.now()}`;
+        console.log("Fetching AI image from: ", aiImageUrl);
 
-        //upload imagekit to media library.
+        // ১. ফ্রি এআই ইউআরএল থেকে ইমেজের র ডেটা তুলে আনা
+        const aiResponse = await fetch(aiImageUrl);
+        console.log("ai response: ", aiResponse);
+        if (!aiResponse.ok) {
+            throw createHttpError(500, "AI Server failed to respond");
+        }
+
+        // ২. ইমেজ ডেটাকে নোডের বিল্ট-ইন Buffer-এ কনভার্ট করা
+        const arrayBuffer = await aiResponse.arrayBuffer();
+        const imageBuffer = Buffer.from(arrayBuffer); // কোনো ইম্পোর্ট ছাড়াই ডিরেক্ট কাজ করবে
+
+        console.log("Uploading valid image buffer to ImageKit...");
         const uploadResponse = await imageKit.files.upload({
-            file: await fetch(generatedImageUrl),
+            file: imageBuffer,
             fileName: `ai-image-${Date.now()}.png`,
             folder: "quickgpt"
         });
