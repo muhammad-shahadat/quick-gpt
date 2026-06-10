@@ -47,6 +47,7 @@ export const handleGenerateImage = async (req, res, next) => {
 
         //generate image url from ai
         const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/quickgpt/${Date.now()}.png?tr=w-800,h-800`;
+        console.log("genereted image url: ", generatedImageUrl);
 
         //upload imagekit to media library.
         const uploadResponse = await imageKit.files.upload({
