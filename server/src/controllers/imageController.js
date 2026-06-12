@@ -46,7 +46,7 @@ export const handleGenerateImage = async (req, res, next) => {
         const encodedPrompt = encodeURIComponent(content);
 
         
-        // Pollinations AI সম্পূর্ণ ফ্রি এবং আনলিমিটেড
+        // Pollinations AI paid version 
         const aiImageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=800&seed=${Date.now()}`;
         console.log("Fetching AI image from: ", aiImageUrl);
 
@@ -94,7 +94,7 @@ export const handleGenerateImage = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.error("ImageKit Generation Error:", error);
+        console.error("Image Generation Error:", error);
         next(error)
         
     }

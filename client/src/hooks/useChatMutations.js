@@ -134,7 +134,7 @@ export const useChatMutations = () => {
             if (context?.previousMessages) {
                 queryClient.setQueryData(['messages', newMessage.chatId], context.previousMessages);
             }
-            //toast.error(err?.response?.data?.message || "Image generation failed!");
+            toast.error(err?.response?.data?.message || "Image generation failed!");
         },
 
         onSettled: (data, error, variables) => {

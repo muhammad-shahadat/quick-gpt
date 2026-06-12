@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Sparkles, Loader } from 'lucide-react';
+import { Sparkles, Loader, AlertCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
 import { useAppContext } from '../../context/useContext';
@@ -13,8 +13,8 @@ import { useParams } from 'react-router-dom';
 const ChatBox = () => {
 
     const { selectedChat, theme } = useAppContext();
-    const {chatId} = useParams();
-    
+    const { chatId } = useParams();
+
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
     const isPaginationRef = useRef(false);
@@ -38,17 +38,17 @@ const ChatBox = () => {
         chatId: chatId || selectedChat?._id,
     })
 
-    
-    const { 
+
+    const {
         sendMessageMutation,
-        generateImageMutation, 
-        createChatMutation, 
-        isAnyLoading, 
-        isAnyError, 
-        error 
+        generateImageMutation,
+        createChatMutation,
+        isAnyLoading,
+        isAnyError,
+        error
     } = useChatMutations();
 
-    
+
 
     const allMessages = data?.pages?.flatMap((page) => page.messages) || [];
 
@@ -56,8 +56,52 @@ const ChatBox = () => {
         e.preventDefault();
         if (!prompt.trim() || isAnyLoading) return;
 
+        if (mode === "image") {
+
+            toast.custom((t) => (
+                <div
+                    className={`${t.visible ? 'animate-enter' : 'animate-leave'
+                        } max-w-md w-full bg-white dark:bg-[#2e1f4d] shadow-2xl rounded-2xl pointer-events-auto flex flex-col p-5 border border-purple-500/30`}
+                    style={{ animationDuration: '0.3s' }}
+                >
+                    <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 bg-amber-100 dark:bg-amber-950/50 p-2 rounded-full">
+                            <AlertCircle className="w-6 h-6 text-amber-500" />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                Feature Temporarily Paused
+                            </p>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 leading-relaxed">
+                                Image Generation feature is temporarily paused as the free-tier AI API limit has expired. Upgrading to a premium plan soon!
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            onClick={() => toast.dismiss(t.id)}
+                            className="px-4 py-1.5 bg-[#6366f1] text-white text-sm font-medium rounded-xl hover:bg-indigo-600 transition-all duration-200 active:scale-95 shadow-md shadow-indigo-500/20"
+                        >
+                            Got it
+                        </button>
+                    </div>
+                </div>
+            ), {
+                id: 'ai-image-paused',
+                duration: 4000, // ঠিক 4 সেকেন্ড স্ক্রিনে ভেসে থাকবে ভাই
+                position: 'bottom-center',
+            });
+
+            // টোস্ট দেখানোর পর ইনপুট ফিল্ডটা ক্লিয়ার ও রিসেট করে দিচ্ছি যাতে ইউজার এক্সপেরিয়েন্স ঠিক থাকে
+            setPrompt("");
+            if (textareaRef.current) {
+                textareaRef.current.style.height = "auto";
+            }
+            return; // এখানেই রিকোয়েস্ট ব্রেক করবে
+        }
+
         const currentPrompt = prompt;
-        setPrompt(""); 
+        setPrompt("");
 
         const currentChatId = chatId || selectedChat?._id
 
@@ -67,21 +111,23 @@ const ChatBox = () => {
 
         const executeMutation = (chatId) => {
 
-            if(mode === "image") {
+            if (mode === "image") {
+
                 generateImageMutation.mutate({ chatId, content: currentPrompt, isPublished });
+                
             }
-            else{
+            else {
                 sendMessageMutation.mutate({ chatId, content: currentPrompt });
             }
         }
 
-    
+
 
         if (currentChatId) {
             executeMutation(currentChatId);
-            
+
         } else {
-            
+
             createChatMutation.mutate(null, {
                 onSuccess: (newChat) => {
                     executeMutation(newChat._id);
@@ -89,11 +135,11 @@ const ChatBox = () => {
             });
         }
     }
-    
+
     useEffect(() => {
 
         let timeoutId;
-        if(inView && hasNextPage && !isFetchingNextPage && !isPageLockRef.current) {
+        if (inView && hasNextPage && !isFetchingNextPage && !isPageLockRef.current) {
 
             isPageLockRef.current = true;
             fetchNextPage().finally(() => {
@@ -101,27 +147,27 @@ const ChatBox = () => {
                     isPageLockRef.current = false;
 
                 }, 1000);
-                
+
             });
 
         }
 
         return () => {
-            if(timeoutId) clearTimeout(timeoutId);
+            if (timeoutId) clearTimeout(timeoutId);
         };
-        
+
 
     }, [inView, hasNextPage, isFetchingNextPage]);
 
     useEffect(() => {
-        if(isFetchingNextPage){
+        if (isFetchingNextPage) {
             isPaginationRef.current = true;
         }
     }, [isFetchingNextPage]);
 
     useEffect(() => {
 
-        if(isPaginationRef.current) {
+        if (isPaginationRef.current) {
             isPaginationRef.current = false;
             return;
         }
@@ -129,7 +175,7 @@ const ChatBox = () => {
         if (isFetchingNextPage) return;
 
         const timer = setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ 
+            messagesEndRef.current?.scrollIntoView({
                 behavior: "smooth",
                 block: "end"
             });
@@ -144,9 +190,9 @@ const ChatBox = () => {
     useEffect(() => {
         if (isAnyError && error) {
             const errorMessage = error?.response?.data?.message || error?.message || "Something went wrong!";
-            
+
             toast.error(errorMessage, {
-                id: 'chat-error', 
+                id: 'chat-error',
                 duration: 4000,
                 position: 'bottom-center',
             });
@@ -158,7 +204,7 @@ const ChatBox = () => {
         <div className='flex-1 flex flex-col justify-between m-5 md:m-10 xl:mx-30 max-md:mt-14 2xl:pr-40'>
 
             {/* chat messages */}
-            <div className='flex-1 mb-5 overflow-y-scroll pr-2 custom-scrollbar flex flex-col-reverse'>                     
+            <div className='flex-1 mb-5 overflow-y-scroll pr-2 custom-scrollbar flex flex-col-reverse'>
 
                 {/* this div controll scrolling */}
                 <div ref={messagesEndRef} />
@@ -167,16 +213,16 @@ const ChatBox = () => {
                 {isAnyLoading && (
                     <div className='flex items-center gap-3 px-4 py-2 w-fit'>
                         <div className='relative flex items-center justify-center'>
-                            
+
                             <div className='absolute inset-0 bg-purple-400 dark:bg-purple-600 blur-md opacity-40 animate-pulse rounded-full'></div>
-                            
-                            
-                            <Sparkles 
-                                size={25} 
-                                className='text-purple-600 dark:text-purple-300 animate-spin [animation-duration:3s]' 
+
+
+                            <Sparkles
+                                size={25}
+                                className='text-purple-600 dark:text-purple-300 animate-spin [animation-duration:3s]'
                             />
                         </div>
-                        
+
                         {
                             mode === "image" ? (
                                 <span className='text-sm font-medium text-gray-500 dark:text-gray-400 animate-pulse'>
@@ -189,25 +235,25 @@ const ChatBox = () => {
 
                             )
                         }
-                        
+
                     </div>
                 )}
 
-                
+
 
                 {
-                    messagesLoading? (
+                    messagesLoading ? (
                         <div className="flex flex-col justify-center items-center h-full gap-4">
                             <div className="relative">
-                                
+
                                 <div className="w-12 h-12 rounded-full border-[3px] border-indigo-500/10 border-t-indigo-500 animate-spin"></div>
-                                
+
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <Loader className="w-6 h-6 text-violet-500 animate-pulse" />
                                 </div>
                             </div>
-                            
-                            
+
+
                         </div>
                     ) : (
                         allMessages.length === 0 ? (
@@ -219,7 +265,7 @@ const ChatBox = () => {
                         ) : (
 
                             <>
-    
+
                                 {
                                     allMessages.map((message, index) => {
                                         return <Message key={message._id || index} message={message} />
@@ -227,8 +273,8 @@ const ChatBox = () => {
                                 }
 
                                 {/* it will be at the top of message mapping and it triggers scrolling*/}
-                                <div 
-                                    ref={ref} 
+                                <div
+                                    ref={ref}
                                     className="h-20 w-full flex items-center justify-center bg-transparent"
                                 >
                                     {isFetchingNextPage ? (
@@ -238,20 +284,20 @@ const ChatBox = () => {
                                     ) : (
                                         /*if no loader empty div will occupy the space and triggers inview*/
                                         <div className="h-1" />
-                                        
+
                                     )}
                                 </div>
-                                
+
                             </>
 
-                            
+
                         )
 
                     )
 
                 }
 
-                
+
 
             </div>
 
@@ -266,45 +312,45 @@ const ChatBox = () => {
             }
 
             {/* prompt input box */}
-            
-        <form onSubmit={handlePromptSubmit} className='bg-primary/20 dark:bg-[#583c79]/30 border border-primary dark:border-[#80609f]/30 rounded-3xl w-full max-w-2xl p-3 pl-4 mx-auto flex gap-4 items-end'> 
-            
-            <select onChange={(e) => setMode(e.target.value)} value={mode} className='text-base pb-2 outline-none bg-transparent'>
-                <option className='dark:bg-purple-900' value="chat">Chat</option>
-                <option className='dark:bg-purple-900' value="image">Image</option>
-            </select>
 
-            
-            <textarea 
-                ref={textareaRef}
-                onChange={(e) => {
-                    setPrompt(e.target.value);
-                    
-                    e.target.style.height = 'auto';
-                    e.target.style.height = e.target.scrollHeight + 'px';
-                }} 
-                onKeyDown={(e) => {
-                    
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handlePromptSubmit(e);
-                    }
-                }}
-                value={prompt} 
-                rows="1" 
-                placeholder="Ask what's on your mind" 
-                className='flex-1 w-full text-[15px] outline-none bg-transparent resize-none max-h-40 py-1'
-                required 
-            />
+            <form onSubmit={handlePromptSubmit} className='bg-primary/20 dark:bg-[#583c79]/30 border border-primary dark:border-[#80609f]/30 rounded-3xl w-full max-w-2xl p-3 pl-4 mx-auto flex gap-4 items-end'>
 
-            <button type="submit" disabled={isAnyLoading} className='pb-1'>
-                <img 
-                    src={isAnyLoading ? assets.stop_icon : assets.send_icon} 
-                    className='w-8 cursor-pointer' 
-                    alt="" 
+                <select onChange={(e) => setMode(e.target.value)} value={mode} className='text-base pb-2 outline-none bg-transparent'>
+                    <option className='dark:bg-purple-900' value="chat">Chat</option>
+                    <option className='dark:bg-purple-900' value="image">Image</option>
+                </select>
+
+
+                <textarea
+                    ref={textareaRef}
+                    onChange={(e) => {
+                        setPrompt(e.target.value);
+
+                        e.target.style.height = 'auto';
+                        e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
+                    onKeyDown={(e) => {
+
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handlePromptSubmit(e);
+                        }
+                    }}
+                    value={prompt}
+                    rows="1"
+                    placeholder="Ask what's on your mind"
+                    className='flex-1 w-full text-[15px] outline-none bg-transparent resize-none max-h-40 py-1'
+                    required
                 />
-            </button>
-        </form>
+
+                <button type="submit" disabled={isAnyLoading} className='pb-1'>
+                    <img
+                        src={isAnyLoading ? assets.stop_icon : assets.send_icon}
+                        className='w-8 cursor-pointer'
+                        alt=""
+                    />
+                </button>
+            </form>
 
 
         </div>
