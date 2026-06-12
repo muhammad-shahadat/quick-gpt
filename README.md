@@ -29,7 +29,7 @@ Quick-GPT is a full-stack AI application built with the **MERN** stack, featurin
 ![Login Page](./screenshots/login.png)
 
 ### Responsive View
-![Mobil View](./screenshots/mobile.png)
+![Mobile View](./screenshots/mobile.png)
 
 ---
 
@@ -168,24 +168,103 @@ npm install
 ```bash
 
 PORT=3000
-MONGODB_URI= # -> your_mongodb_connection_string
+MONGODB_URI=your_mongodb_connection_string
 NODE_ENV=development
 
-#nodemailer verification system (optional).
-SMTP_USERNAME=
-SMTP_PASSWORD=
+# Brevo mailer system configuration
+BREVO_SMTP_API_KEY=
+
+# JSON Web Token configurations
 JWT_ACTIVATION_KEY=
 JWT_ACCESS_KEY=
 JWT_REFRESH_KEY=
 
-CLIENT_URL= # -> frontend url
-GEMINI_API_KEY= # -> your gemini api key
+CLIENT_URL=http://localhost:5173
+GEMINI_API_KEY=your_gemini_api_key
+
+# ImageKit configurations
+IMAGEKIT_PUBLIC_KEY=
+IMAGEKIT_PRIVATE_KEY=
+IMAGEKIT_URL_ENDPOINT=
+
+# Stripe payment configurations
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET_KEY=
+
 ```
 #### Then start the backend server:
 ```bash
 npm start
 ```
-### 3. Setup Frontend
+
+### 3. Import Postman Collection
+```text
+
+quick-gpt/
+├── server/
+├── client/
+├── postman/
+│   └── QuickGpt.postman_collection.json
+└── README.md
+```
+The API requests used for seeding and testing are available in:
+
+```text
+postman/QuickGpt.postman_collection.json
+```
+
+Import the collection into Postman:
+
+1. Open Postman
+2. Click Import
+3. Select `postman/QuickGpt.postman_collection.json`
+4. Run the requests
+
+#### 📌 Testing Options:
+- **1.🌐 Live Server (Recommended):** If you want to test against the live demo server instead of localhost, replace `http://localhost:3000` with `https://quick-gpt-server-qbhl.onrender.com` in Postman request URLs. All API endpoints will work immediately without any local setup.
+- **2.💻 Local Machine:** To test completely locally, keep http://localhost:3000 (Make sure your local backend server and MongoDB are running).
+
+
+### 4. Execute Postman API Requests in Order
+> ℹ️ **Note:** The application automatically seeds the initial subscription plans (Basic, Pro, Premium) into your database on the first server startup (`npm start`). You don't need to run any manual database scripts. 
+#### Execute the following requests **in order** from Postman:
+
+```text
+QuickGpt/
+├── authRoute/
+│   ├── POST /register            <-- 1. Create a new user account
+│   ├── GET /activate/verify      <-- 2. Verify account via Email Token
+│   ├── POST /login               <-- 3. Login to receive HttpOnly cookies/tokens
+│   ├── POST /refresh-token
+│   └── POST /logout
+│
+├── userRoute/
+│   └── GET /profile
+│
+├── chatRoute/
+│   ├── POST /create-chat          <-- 4. Establish a new chat session
+│   ├── POST /send-message        <-- 5. Send a chat message to AI
+│   ├── POST /generate-image
+│   ├── GET /chats
+│   └── DELETE /chat/:id
+│
+├── messageRoute/
+│   └── GET /messages
+│
+├── imageRoute/
+│   └── GET /published-images
+│
+├── planRoute/
+│   └── GET /plans                <-- 6. Fetch the automatically seeded plans
+│
+└── paymentRoute/
+    ├── POST /create-checkout-session
+    └── POST /verify-payment
+
+```
+
+### 5. Setup Frontend
 #### Split terminal and go back root dir using `cd ..` then run:
 ```bash
 cd client
@@ -193,7 +272,7 @@ npm install
 ```
 #### create a .env file (optional) and add: 
 ```bash
-VITE_API_BASE_URL= # -> backend url
+VITE_API_BASE_URL=http://localhost:3000
 ```
 #### Then run the frontend:
 ```bash
