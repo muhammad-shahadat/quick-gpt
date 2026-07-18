@@ -88,7 +88,7 @@ const ChatBox = () => {
                 </div>
             ), {
                 id: 'ai-image-paused',
-                duration: 4000, // ঠিক 4 সেকেন্ড স্ক্রিনে ভেসে থাকবে ভাই
+                duration: 4000, // ঠিক 4 সেকেন্ড স্ক্রিনে ভেসে থাকবে
                 position: 'bottom-center',
             });
 
@@ -204,7 +204,7 @@ const ChatBox = () => {
         <div className='flex-1 flex flex-col justify-between m-5 md:m-10 xl:mx-30 max-md:mt-14 2xl:pr-40'>
 
             {/* chat messages */}
-            <div className='flex-1 mb-5 overflow-y-scroll pr-2 custom-scrollbar flex flex-col-reverse'>
+            <div className='flex-1 flex flex-col-reverse mb-5 overflow-y-auto pr-2 custom-scrollbar'>
 
                 {/* this div controll scrolling */}
                 <div ref={messagesEndRef} />
